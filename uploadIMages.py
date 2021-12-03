@@ -12,8 +12,8 @@ if __name__ == "__main__":
     sc = SparkContext(appName="feature_extractor")
     sqlContext = SQLContext(sc)
     imglist = []
-    for img_path in os.listdir("./small_dataset"):
-        img = cv2.imread("/home/tejasv55/Documents/PDC-SPARK-CBIR/small_dataset/"+img_path)
+    for img_path in os.listdir("./TinyImageNet/"):
+        img = cv2.imread("./TinyImageNet/"+img_path)
         retval, buffer = cv2.imencode('.jpg', img)
         imgtext = base64.b64encode(buffer)
         # decodeimg = base64.b64decode(imgtext)
@@ -22,8 +22,8 @@ if __name__ == "__main__":
         imglist.append([img_path,imgtext])
     rddimglist = sc.parallelize(imglist)
     #x = sc.binaryFiles("/home/tejasv55/Documents/PDC-SPARK-CBIR/small_dataset")
-    rddimglist.map(lambda data: (data[0], data[1])).saveAsSequenceFile("alluxio://localhost:19998/SequenceFiles")
-    alluxioFile = sc.sequenceFile("alluxio://localhost:19998/SequenceFiles") 
+    rddimglist.map(lambda data: (data[0], data[1])).saveAsSequenceFile("alluxio://localhost:19998/SequenceFiles-10K")
+    alluxioFile = sc.sequenceFile("alluxio://localhost:19998/SequenceFiles-10K") 
     print(alluxioFile.count())
     print("===========================")
     print("===========================")

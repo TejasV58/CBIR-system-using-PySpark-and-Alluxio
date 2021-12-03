@@ -10,7 +10,7 @@ from pyspark import SparkContext
 from pyspark.sql import SQLContext, Row
 import time
 
-from skimage.feature import hog
+from skimage.feature import hog,ORB,SIFT
 
 def extract_HOG_features(img):
     # hog = cv2.HOGDescriptor()
@@ -26,11 +26,12 @@ if __name__ == "__main__":
     sc = SparkContext(appName="feature_extractor")
     sqlContext = SQLContext(sc)
 
-    feature_parquet_path = "alluxio://localhost:19998/parquetHOGFeatures"
+    feature_parquet_path = "alluxio://localhost:19998/parquetHOGFeatures-10K"
     
     features = sqlContext.read.parquet(feature_parquet_path).cache()
     start = time.time()
-    query_img = cv2.imread("/home/tejasv55/Documents/PDC-SPARK-CBIR/query_image.JPEG")
+    query_img = cv2.imread("./Query_Image.jpg")
+    query_img = cv2.cvtColor(query_img, cv2.COLOR_BGR2GRAY)
     query_img = cv2.resize(query_img, (300,300))
     qfeatures = extract_HOG_features(query_img)
     distance_udf = F.udf(lambda f: float(np.linalg.norm(f-qfeatures)),DoubleType())
