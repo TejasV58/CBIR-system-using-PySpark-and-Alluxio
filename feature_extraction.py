@@ -1,10 +1,6 @@
 from __future__ import print_function
 import logging
-import io
-import sys
-import os
 
-from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from pyspark.sql import functions as F
@@ -16,13 +12,9 @@ from pyspark.sql import SQLContext, Row
 import base64
 import time
 
-from skimage.feature import hog,ORB,SIFT
-from skimage import data, exposure
+from skimage.feature import hog
 
 def extract_HOG_features(img):
-    # extractor = cv2.SIFT_create()
-    # kp = extractor.detect(img, None)
-    # kp,des = extractor.compute(img,kp)
     fd = hog(img)
     return fd
 
@@ -32,9 +24,8 @@ def extract_opencv_features(imgfile_imgbytes):
         decodeimg = base64.b64decode(imgbytes)
         nparr = np.frombuffer(decodeimg, np.uint8)
         img = cv2.imdecode(nparr,0)
-        img = cv2.resize(img,(300,300))
+        img = cv2.resize(img,(360,360))
         d = extract_HOG_features(img)
-        print(d.shape)
         return [(imgfilename, d)]
     except Exception as e:
         logging.exception(e)
@@ -44,21 +35,26 @@ def extract_opencv_features(imgfile_imgbytes):
 if __name__ == "__main__":
     sc = SparkContext(appName="feature_extractor")
     sqlContext = SQLContext(sc)
-
-    image_seqfile_path = "alluxio://localhost:19998/SequenceFiles-10K"
-    feature_parquet_path = "alluxio://localhost:19998/parquetHOGFeatures-10K"
+    
+    image_seqfile_path = "alluxio://localhost:19998/SequenceFiles-ImageNet-200"
+    feature_parquet_path = "alluxio://localhost:19998/ImageNet-200-HOG"
+    
+    Total_start = time.time()
     images = sc.sequenceFile(image_seqfile_path)
-    start = time.time()
+    read_end = time.time()
     features = images.flatMap(extract_opencv_features)
-    end = time.time()
+    extract_end = time.time()
     #features = features.filter(lambda x: x[1] != None)
     features = features.map(lambda x: (Row(fileName=x[0], features=x[1].tolist())))
     featuresSchema = sqlContext.createDataFrame(features)
-    #featuresSchema.show()
     featuresSchema.registerTempTable("images")
     featuresSchema.write.parquet(feature_parquet_path)
-    
-    print("============================================")
-    print(f"Total time required : {end - start}")
-    print("============================================")
-
+    Total_end = time.time()
+    print("======================================================")
+    print("############## ImageNet-200 DATASET ##############")
+    print("======================================================")
+    print(f"Sequence file read time : {read_end - Total_start}")
+    print(f"Feature extraction time : {extract_end - read_end}")
+    print(f"Conversion time         : {Total_end - extract_end}")
+    print(f"Total time required     : {Total_end - Total_start}")
+    print("====================================================")
