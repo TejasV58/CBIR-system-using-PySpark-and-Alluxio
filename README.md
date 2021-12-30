@@ -41,7 +41,7 @@ $ ./bin/alluxio-start.sh local SudoMount
 9. To Stop alluxio : 
 
 ```shell
-./bin/alluxio-stop.sh local
+$ ./bin/alluxio-stop.sh local
 ```
 
 ## SPARK STEPS
