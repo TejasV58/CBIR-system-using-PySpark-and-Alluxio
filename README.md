@@ -10,6 +10,9 @@ The task of Content Based Image Retrieval (CBIR) is becoming increasingly comple
 2. README.md - readme file
 3. CBIR Report_19BCE1328_19BCE1295_19BCE1614.docx - project report
 4. Code - uploadIMages.py, feature_extraction.py, similarity.ipynb
+5. Reference Papers.zip - folder of reference paper
+6. CBIR REVIEW 3 PPT.pptx - final ppt
+7. CBIR_video - demonstration video
 
 ## Requirements
 
