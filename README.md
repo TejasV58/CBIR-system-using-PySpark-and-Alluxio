@@ -4,6 +4,13 @@
 
 The task of Content Based Image Retrieval (CBIR) is becoming increasingly complex due to the large number of images available on the internet. This task involves retrieval of similar images based on an input image given by the user. To enable faster computation of similar images, the proposed work uses Apache Spark and Alluxio, previously known as Tachyon. Spark is an open-source software used for processing Big Data. It provides parallelism that reduces computational time. Alluxio on the other hand is a virtual distributed storage system. Although models using Spark for CBIR have been proposed earlier, the proposed model aims at reducing the retrieval time of images by optimizing this task by modifying the feature extraction mechanism. Histogram of oriented gradients (HOG) feature descriptor has been used to find the similarity between images. The K Nearest Neighbours (KNN) algorithm has been used and optimized to compute the top K similar images to query images.
 
+## Documents
+
+1. TinyImageNet.tar.xz - dataset zip
+2. README.md - readme file
+3. CBIR Report_19BCE1328_19BCE1295_19BCE1614.docx - project report
+4. Code - uploadIMages.py, feature_extraction.py, similarity.ipynb
+
 ## Requirements
 
 #### Pre-requisite:
