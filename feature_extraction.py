@@ -31,15 +31,14 @@ if __name__ == "__main__":
     sc = SparkContext(appName="feature_extractor")
     sqlContext = SQLContext(sc)
     
-    image_seqfile_path = "alluxio://localhost:19998/SeqImageClef11963"
-    feature_parquet_path = "alluxio://localhost:19998/SeqImageClef11963Features"
+    image_seqfile_path = "alluxio://localhost:19998/ImageNet20000"
+    feature_parquet_path = "alluxio://localhost:19998/ImageNet20000Features"
     
     Total_start = time.time()
     images = sc.sequenceFile(image_seqfile_path)
     read_end = time.time()
     features = images.flatMap(extract_opencv_features)
     extract_end = time.time()
-    #features = features.filter(lambda x: x[1] != None)
     features = features.map(lambda x: (Row(fileName=x[0], features=x[1].tolist())))
     featuresSchema = sqlContext.createDataFrame(features)
     featuresSchema.registerTempTable("images")

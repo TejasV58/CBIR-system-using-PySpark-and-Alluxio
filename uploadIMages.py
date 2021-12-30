@@ -14,9 +14,9 @@ if __name__ == "__main__":
     imglist = []
     start = time.time()
     count = 0
-    for img_path in os.listdir("./ImageClef5952"):
+    for img_path in os.listdir("./TinyImageNet"):
         try:
-            img = cv2.imread("/home/tejasv55/Documents/CBIR-system-using-PySpark-and-Alluxio/ImageClef11963/"+img_path)
+            img = cv2.imread("/home/tejasv55/Documents/CBIR-system-using-PySpark-and-Alluxio/TinyImageNet/"+img_path)
             img = cv2.resize(img,(300,300))
             retval, buffer = cv2.imencode('.jpg', img)
             imgtext = base64.b64encode(buffer)
@@ -24,11 +24,13 @@ if __name__ == "__main__":
         except:
             count+=1
     print(str(count) + " Number of images Failed to Load.")
+    
     rddimglist = sc.parallelize(imglist)
-    rddimglist.map(lambda data: (data[0], data[1])).saveAsSequenceFile("alluxio://localhost:19998/SeqImageClef11963")
+    rddimglist.map(lambda data: (data[0], data[1])).saveAsSequenceFile("alluxio://localhost:19998/ImageNet20000")
     end = time.time()
-    alluxioFile = sc.sequenceFile("alluxio://localhost:19998/SeqImageClef11963")
+    alluxioFile = sc.sequenceFile("alluxio://localhost:19998/ImageNet20000")
     print(alluxioFile.count())
+    
     print("=============================")
     print(f"Time taken: {end-start}")
     print("=============================")
