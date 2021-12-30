@@ -23,28 +23,26 @@ def find_distance(feature,qfeature):
 
 
 if __name__ == "__main__":
-    # sc = SparkSession.builder\
-    #     .master('local[*]')\
-    #     .config("spark.driver.memory","2g")\
-    #     .appName("Simialrity")\
-    #     .getOrCreate()
+
     sc = SparkContext(appName="feature_extractor")
     memory = sc._conf.get('spark.driver.memory')
     sqlContext = SQLContext(sc)
-    feature_parquet_path = "alluxio://localhost:19998/ImageNet20000Features"
+    feature_parquet_path = "alluxio://localhost:19998/ImageClef2011Features-1"
     
     features = sqlContext.read.parquet(feature_parquet_path)
-    features_rdd = features.limit(5000).rdd
+    features_rdd = features.limit(1000).rdd
 
-    query_img = cv2.imread("/home/tejasv55/Documents/CBIR-system-using-PySpark-and-Alluxio/Query_Image.jpg")
-    # query_img = cv2.resize(query_img, (300,300))
+    query_img = cv2.imread("/home/tejasv55/Documents/CBIR-system-using-PySpark-and-Alluxio/Query_Image1.jpg")
+    query_img = cv2.resize(query_img, (300,300))
     query_img = cv2.cvtColor(query_img, cv2.COLOR_BGR2GRAY)
     qfeature = hog(query_img)
 
     distances = features_rdd.map(lambda x: find_distance(x,qfeature))
     top5 = distances.sortBy(lambda x: x[1]).take(5)
+    
     print("==============================================================")
-    print(top5)
+    for (i,x) in enumerate(top5):
+        print("Image "+str(i+1) + " :  "+x[0])
     print("==============================================================")
 
 
